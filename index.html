@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Проект "Комменты"</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <ul class="comments">
+       
+      </ul>
+      <div class="add-form">
+        <input
+          type="text"
+          class="add-form-name"
+          placeholder="Введите ваше имя"
+        />
+        <textarea
+          type="textarea"
+          class="add-form-text"
+          placeholder="Введите ваш коментарий"
+          rows="4"
+        ></textarea>
+        <div class="add-form-row">
+          <button class="add-form-button">Написать</button>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    const comments = [];
+
+  const commentsList = document.querySelector('.comments');
+
+  const nameInput = document.querySelector('.add-form-name');
+  const commentInput = document.querySelector('.add-form-text');
+  const addButton = document.querySelector('.add-form-button');
+
+  nameInput.addEventListener('input', () => {
+    console.log('Имя изменено:', nameInput.value);
+  });
+
+  commentInput.addEventListener('input', () => {
+    console.log('Комментарий изменён:', commentInput.value);
+  });
+
+  function renderComments() {
+    commentsList.innerHTML = ''; 
+    comments.forEach((comment, index) => {
+      const formattedDate = new Date(comment.date).toLocaleDateString('ru-RU') + ' ' + new Date(comment.date).toLocaleTimeString('ru-RU').slice(0, 5);
+      const heartClass = comment.liked ? 'liked' : ''; 
+
+      const newComment = `
+        <li class="comment">
+          <div class="comment-header">
+            <div>${comment.name}</div>
+            <div>${formattedDate}</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-text">
+              ${comment.text}
+            </div>
+          </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">${comment.likes}</span>
+              <button class="like-button ${heartClass}" data-index="${index}"></button>
+            </div>
+          </div>
+        </li>
+      `;
+      commentsList.innerHTML += newComment;
+    });
+
+    const likeButtons = document.querySelectorAll('.like-button');
+    likeButtons.forEach(button => {
+      button.addEventListener('click', toggleLike);
+    });
+  }
+
+  addButton.addEventListener('click', () => {
+    const name = nameInput.value.trim();
+    const comment = commentInput.value.trim();
+
+    if (name === '' || comment === '') {
+      alert('Пожалуйста, заполните оба поля');
+      return;
+    }
+
+    comments.push({
+      name: name,
+      text: comment,
+      date: new Date(),
+      likes: 0,
+      liked: false
+    });
+
+
+    renderComments();
+    nameInput.value = '';
+    commentInput.value = '';
+  });
+
+  function toggleLike(event) {
+    const index = event.target.dataset.index;
+    const comment = comments[index];
+
+    comment.liked = !comment.liked;
+    comment.liked ? comment.likes++ : comment.likes--;
+
+    renderComments();
+  }
+  console.log("It works!");
+  </script>
+</html>
