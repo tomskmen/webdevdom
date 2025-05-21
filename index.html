@@ -41,13 +41,6 @@
   const commentInput = document.querySelector('.add-form-text');
   const addButton = document.querySelector('.add-form-button');
 
-  nameInput.addEventListener('input', () => {
-    console.log('Имя изменено:', nameInput.value);
-  });
-
-  commentInput.addEventListener('input', () => {
-    console.log('Комментарий изменён:', commentInput.value);
-  });
 
   function renderComments() {
     commentsList.innerHTML = ''; 
