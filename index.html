@@ -9,141 +9,136 @@
   <body>
     <div class="container">
       <ul class="comments">
-       
-
-        
+      
       </ul>
       <div class="add-form">
         <input
           type="text"
           class="add-form-name"
           placeholder="Введите ваше имя"
+          id="name-input"
         />
         <textarea
           type="textarea"
           class="add-form-text"
           placeholder="Введите ваш коментарий"
           rows="4"
+          id="text-input"
         ></textarea>
         <div class="add-form-row">
           <button class="add-form-button">Написать</button>
         </div>
       </div>
     </div>
+    <script type="module" src="./index.js"></script>
   </body>
 
-  <script>
-  const comments = [];
+  <!-- <script>
+    "use strict";
 
-  const commentsList = document.querySelector('.comments');
+    const name = document.getElementById("name-input");
+    const text = document.getElementById("text-input");
 
-  const nameInput = document.querySelector('.add-form-name');
-  const commentInput = document.querySelector('.add-form-text');
-  const addButton = document.querySelector('.add-form-button');
-  function escapeHtml(text) {
-    return text
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-  }
+    const sanitizenHtml = (value) => {
+      return value.replaceAll("<","&lt;").replaceAll(">", "&gt;");
+    };
 
-  function renderComments() {
-    commentsList.innerHTML = '';
-    comments.forEach((comment, index) => {
-      const formattedDate = new Date(comment.date).toLocaleDateString('ru-RU') + ' ' + new Date(comment.date).toLocaleTimeString('ru-RU').slice(0, 5);
-      const heartClass = comment.liked ? 'liked' : '';
+    const comments = [
+    {
+      name: "Глеб Фокин",
+      date: new Date(),
+      text: "Это будет первый комментарий на этой странице",
+      likes: 3,
+      isLiked: false, 
+    },
+    {
+      name: "Варвара Н",
+      date: new Date(),
+      text: "Мне нравится как оформлена эта страница! ❤",
+      likes: 75,
+      isLiked: true,  
+    },
+    ];
 
-      const safeName = escapeHtml(comment.name);
-      const safeText = escapeHtml(comment.text);
+    const renderComments = () => {
+      const list = document.querySelector(".comments");
 
-      const newComment = `
-        <li class="comment" data-index="${index}">
+      list.innerHTML = comments.map((comment, index) => {
+       return `
+       <li class="comment" data-index="${index}">
           <div class="comment-header">
-            <div>${safeName}</div>
-            <div>${formattedDate}</div>
+            <div>${comment.name}</div>
+            <div>${comment.date.toLocaleDateString()}</div>
           </div>
           <div class="comment-body">
             <div class="comment-text">
-              ${safeText}
+              ${comment.text}
             </div>
           </div>
           <div class="comment-footer">
             <div class="likes">
               <span class="likes-counter">${comment.likes}</span>
-              <button class="like-button ${heartClass}" data-index="${index}" aria-label="Лайк"></button>
+              <button data-index="${index}" class="like-button ${comment.isLiked ?
+               "-active-like" : ""}"></button>
             </div>
           </div>
         </li>
-      `;
-      commentsList.innerHTML += newComment;
-    });
+       `;
+      })
+      .join("");
 
-    const likeButtons = document.querySelectorAll('.like-button');
-    likeButtons.forEach(button => {
-      button.addEventListener('click', toggleLike);
-    });
+      const likeButtons = document.querySelectorAll(".like-button");
+      for (const likeButton of likeButtons) {
+        likeButton.addEventListener("click", (event) => {
+          event.stopPropagation();
 
-    const commentItems = document.querySelectorAll('.comment');
-    commentItems.forEach(item => {
-      item.addEventListener('click', onCommentClick);
-    });
-  }
+          const index = likeButton.dataset.index;
+          const comment = comments [index];
 
-  addButton.addEventListener('click', () => {
-    const rawName = nameInput.value.trim();
-    const rawComment = commentInput.value.trim();
+          comment.likes = comment.isLiked
+          ? comment.likes - 1
+          : comment.likes + 1;
 
-    if (rawName === '' || rawComment === '') {
-      alert('Пожалуйста, заполните оба поля');
-      return;
-    }
+          comment.isLiked = !comment.isLiked;
+          renderComments();
 
-    const safeName = escapeHtml(rawName);
-    const safeComment = escapeHtml(rawComment);
-
-    comments.push({
-      name: safeName,
-      text: safeComment,
-      date: new Date(),
-      likes: 0,
-      liked: false
-    });
+        });
+      }
+      const commentsElements = document.querySelectorAll(".comment");
+      for (const commentElement of commentsElements){
+        commentElement.addEventListener("click", () =>{
+          
+           const currentComment = comments[commentElement.dataset.index];
+           text.value = `${currentComment.name}: ${currentComment.text}`;
+        });
+      }
+    };
 
     renderComments();
-    nameInput.value = '';
-    commentInput.value = '';
-  });
 
-  function toggleLike(event) {
-    event.stopPropagation(); 
+    const addButton = document.querySelector(".add-form-button");
 
-    const index = event.target.dataset.index;
-    const comment = comments[index];
+    addButton.addEventListener("click", () => {
+      if (!name.value || !text.value) {
+        console.error("заполните форму");
+        return;
+      }
+      const newComment = {
+        name: sanitizenHtml(name.value),
+        date: new Date(),
+        text: sanitizenHtml(text.value),
+        likes: 0,
+        isLiked: false,
 
-    comment.liked = !comment.liked;
-    comment.liked ? comment.likes++ : comment.likes--;
+      };
 
-    renderComments();
-  }
+      comments.push(newComment);
 
-  function onCommentClick(event) {
-    if (event.target.classList.contains('like-button')) {
-      return;
-    }
+      renderComments();
 
-    const li = event.currentTarget;
-    const index = li.dataset.index;
-    const comment = comments[index];
+      name.value = "";
+      text.value = "";
 
-    const quotedText = comment.text
-      .split('\n')
-      .map(line => '> ' + line)
-      .join('\n');
-
-    commentInput.value = `${quotedText}\n— ${comment.name}, `;
-    commentInput.focus();
-  }
-
-  console.log("It works!");
-</script>
-
+    });
+  </script> -->
 </html>
