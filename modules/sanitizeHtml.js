@@ -1,3 +1,3 @@
-export const sanitizenHtml = (value) => {
+export const sanitizeHtml = (value) => {
       return value.replaceAll("<","&lt;").replaceAll(">", "&gt;");
     };

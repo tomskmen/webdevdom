@@ -1,5 +1,6 @@
-import { comments } from "./comments.js";
-import { sanitizenHtml } from "./sanitizenHtml.js";
+import { postComment } from "./api.js";
+import { comments, updateComments } from "./comments.js";
+import { sanitizeHtml } from "./sanitizeHtml.js";
 
 export const initLikeListeners = (renderComments) =>{
 const likeButtons = document.querySelectorAll(".like-button");
@@ -41,23 +42,16 @@ export const initAddCommentListener = (renderComments) =>{
     addButton.addEventListener("click", () => {
       if (!name.value || !text.value) {
         console.error("заполните форму");
-        return;
+        return
       }
-      const newComment = {
-        name: sanitizenHtml(name.value),
-        date: new Date(),
-        text: sanitizenHtml(text.value),
-        likes: 0,
-        isLiked: false,
-
-      };
-
-      comments.push(newComment);
-
-      renderComments();
-
-      name.value = "";
-      text.value = "";
-
-    });
+    
+      postComment(sanitizeHtml(text.value), sanitizeHtml(name.value)).then
+      (() => {
+        updateComments (data) 
+        renderComments()
+        name.value = ""
+        text.value = ""
+      },
+    )
+  })
 }
