@@ -9,141 +9,27 @@
   <body>
     <div class="container">
       <ul class="comments">
-       
-
-        
+      
       </ul>
       <div class="add-form">
         <input
           type="text"
           class="add-form-name"
           placeholder="Введите ваше имя"
+          id="name-input"
         />
         <textarea
           type="textarea"
           class="add-form-text"
           placeholder="Введите ваш коментарий"
           rows="4"
+          id="text-input"
         ></textarea>
         <div class="add-form-row">
           <button class="add-form-button">Написать</button>
         </div>
       </div>
     </div>
+    <script type="module" src="./index.js"></script>
   </body>
-
-  <script>
-  const comments = [];
-
-  const commentsList = document.querySelector('.comments');
-
-  const nameInput = document.querySelector('.add-form-name');
-  const commentInput = document.querySelector('.add-form-text');
-  const addButton = document.querySelector('.add-form-button');
-  function escapeHtml(text) {
-    return text
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-  }
-
-  function renderComments() {
-    commentsList.innerHTML = '';
-    comments.forEach((comment, index) => {
-      const formattedDate = new Date(comment.date).toLocaleDateString('ru-RU') + ' ' + new Date(comment.date).toLocaleTimeString('ru-RU').slice(0, 5);
-      const heartClass = comment.liked ? 'liked' : '';
-
-      const safeName = escapeHtml(comment.name);
-      const safeText = escapeHtml(comment.text);
-
-      const newComment = `
-        <li class="comment" data-index="${index}">
-          <div class="comment-header">
-            <div>${safeName}</div>
-            <div>${formattedDate}</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              ${safeText}
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">${comment.likes}</span>
-              <button class="like-button ${heartClass}" data-index="${index}" aria-label="Лайк"></button>
-            </div>
-          </div>
-        </li>
-      `;
-      commentsList.innerHTML += newComment;
-    });
-
-    const likeButtons = document.querySelectorAll('.like-button');
-    likeButtons.forEach(button => {
-      button.addEventListener('click', toggleLike);
-    });
-
-    const commentItems = document.querySelectorAll('.comment');
-    commentItems.forEach(item => {
-      item.addEventListener('click', onCommentClick);
-    });
-  }
-
-  addButton.addEventListener('click', () => {
-    const rawName = nameInput.value.trim();
-    const rawComment = commentInput.value.trim();
-
-    if (rawName === '' || rawComment === '') {
-      alert('Пожалуйста, заполните оба поля');
-      return;
-    }
-
-    const safeName = escapeHtml(rawName);
-    const safeComment = escapeHtml(rawComment);
-
-    comments.push({
-      name: safeName,
-      text: safeComment,
-      date: new Date(),
-      likes: 0,
-      liked: false
-    });
-
-    renderComments();
-    nameInput.value = '';
-    commentInput.value = '';
-  });
-
-  function toggleLike(event) {
-    event.stopPropagation(); 
-
-    const index = event.target.dataset.index;
-    const comment = comments[index];
-
-    comment.liked = !comment.liked;
-    comment.liked ? comment.likes++ : comment.likes--;
-
-    renderComments();
-  }
-
-  function onCommentClick(event) {
-    if (event.target.classList.contains('like-button')) {
-      return;
-    }
-
-    const li = event.currentTarget;
-    const index = li.dataset.index;
-    const comment = comments[index];
-
-    const quotedText = comment.text
-      .split('\n')
-      .map(line => '> ' + line)
-      .join('\n');
-
-    commentInput.value = `${quotedText}\n— ${comment.name}, `;
-    commentInput.focus();
-  }
-
-  console.log("It works!");
-</script>
-
 </html>
