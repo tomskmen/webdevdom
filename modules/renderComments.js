@@ -1,8 +1,8 @@
 import {comments} from "./comments.js";
-import { initLikeListeners, initReplyListeners } from "./initListeners.js";
+import { initLikeListeners, initReplyListeners } from "./initListeners.js"
 
 export const renderComments = () => {
-      const list = document.querySelector(".comments");
+      const list = document.querySelector(".comments")
 
       list.innerHTML = comments.map((comment, index) => {
        return `
@@ -28,6 +28,6 @@ export const renderComments = () => {
       })
       .join("");
 
-      initLikeListeners(renderComments);
-      initReplyListeners();
-    };
+      initLikeListeners(renderComments)
+      initReplyListeners()
+    }
